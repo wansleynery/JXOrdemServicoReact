@@ -1,0 +1,24 @@
+SELECT
+    eq.ID AS \"value\",
+    eq.ID || '. ' || tip.DESCRICAO || ' ' || mod.DESCRICAO || ' (' || eq.CONTROLE || ')' AS \"label\",
+    eq.CONTROLE AS SERIE,
+    eq.CONTROLE AS SERIE,
+    tip.DESCRICAO AS TIPO,
+    mod.DESCRICAO AS MODELO,
+    mar.DESCRICAO AS FABRICANTE,
+    mar.CODIGO AS FABRICANTE_ID,
+    par.NOMEPARC AS CLIENTE,
+    par.CODPARC AS CODCLIENTE
+    
+FROM
+    AD_EQUIPAMENTO eq
+    INNER JOIN TGFPAR par ON par.CODPARC = eq.CODPARCCLI
+    LEFT JOIN TGFMAR mar ON mar.CODIGO = eq.CODMARCA
+    LEFT JOIN AD_MODELOEQUIPAMENTO mod ON mod.ID = eq.CODMODELO
+    LEFT JOIN AD_TIPOEQUIPAMENTO tip ON tip.ID = eq.CODTIPO
+    
+WHERE ROWNUM < 100
+    %where
+
+ORDER BY
+    eq.ID

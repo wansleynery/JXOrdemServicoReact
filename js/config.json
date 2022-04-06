@@ -1,0 +1,79 @@
+{
+    "etapas": [
+        {
+            "id": "preatendimento",
+            "nome": "Pré Atendimento",
+            "itens": [
+                {
+                    "name": "Cadastrar Equipamento",
+                    "link": "br.com.sankhya.menu.adicional.AD_EQUIPAMENTO",
+                    "credencial": ["X", "A", "G"],
+                    "params": {}
+                },
+                {
+                    "name": "Consultar Equipamento",
+                    "link": "br.com.sankhya.menu.adicional.AD_EQUIPAMENTO",
+                    "credencial": ["X", "A", "G", "T"],
+                    "params": {}
+                },
+                {
+                    "name": "Cadastrar Parceiro",
+                    "link": "br.com.sankhya.core.cad.parceiros",
+                    "credencial": ["X", "A", "G"],
+                    "params": {
+                        "CODPARC": 4333
+                    }
+                },
+                {
+                    "name": "Consultar Parceiro",
+                    "link": "br.com.sankhya.core.cad.parceiros",
+                    "credencial": ["X", "A", "G", "T"],
+                    "params": {
+                        "CODPARC": 4332
+                    }
+                },
+                {
+                    "id": "createOS",
+                    "name": "Criar Ordem de Serviço",
+                    "link": "br.com.sankhya.os.cad.lancamentoOs",
+                    "credencial": ["X", "A", "G"],
+                    "params": {}
+                }
+            ]
+        },
+        {
+            "id": "analiseorcamentaria",
+            "nome": "Análise-Orçamento Pré-Serviço",
+            "itens": [
+                {
+                    "name": "Definir Técnico",
+                    "link": "br.com.sankhya.os.con.consultaOs",
+                    "credencial": ["X", "G"],
+                    "params": {}
+                },
+                {
+                    "name": "Solicitar Material Orçamento",
+                    "link": "br.com.sankhya.os.con.consultaOs",
+                    "credencial": ["X", "T"],
+                    "params": {}
+                },
+                {
+                    "name": "Gerenciar Solicitações",
+                    "link": "br.com.sankhya.os.con.consultaOs",
+                    "credencial": ["X", "E"],
+                    "params": {}
+                }
+            ]
+        },
+        {
+            "id": "resolucaoservico",
+            "nome": "Resolução de Serviço e Venda",
+            "itens": []
+        },
+        {
+            "id": "servicosadicionais",
+            "nome": "Serviços Adicionais",
+            "itens": []
+        }
+    ]
+}
