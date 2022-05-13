@@ -88,7 +88,7 @@ class GrupoEquipamento extends React.Component {
                                 popupEquipamentoLista: [],
                                 popupAbertoSet: false
                             });
-                            this.atualizaEquipamentoLista ();
+                            this.atualizaEquipamentoLista (false);
                         }
                     }
                     style=      {{ height: 'auto', width: '700px' }}
@@ -225,17 +225,16 @@ class GrupoEquipamento extends React.Component {
                 popupParcSet: undefined,
                 popupEquipSet: undefined,
                 popupEquipamentoLista: undefined,
-                popupParceiroLista: undefined,
 
                 fabricante  : equipamento.FABRICANTE,
                 modelo      : equipamento.MODELO,
                 serie       : equipamento.SERIE
             });
 
-            this.localizarParceiro ('');
-
             this.props.callback (equipamento);
+
             this.getEnderecos (equipamento.value);
+            this.getContratos (equipamento.value);
 
         }
         else {
@@ -255,7 +254,6 @@ class GrupoEquipamento extends React.Component {
                 popupAbertoSet       : false,
                 popupParcSet         : undefined,
                 popupEquipSet        : undefined,
-                popupParceiroLista   : undefined,
                 popupEquipamentoLista: undefined
 
             });
@@ -263,9 +261,9 @@ class GrupoEquipamento extends React.Component {
             this.props.clearForm ();
             
             this.getEquipamentos ();
-
-            this.localizarParceiro ('');
         }
+
+        this.localizarParceiro ('');
 
     }
 
@@ -279,7 +277,7 @@ class GrupoEquipamento extends React.Component {
     
     getContratos (equipamento) {
         host.loadFile (`${ globalFullUrl }sql/contratos.sql`).then (contratoQuery =>
-            query.select (contratoQuery.format ({ equipamento: equipamento.value })).
+            query.select (contratoQuery.format ({ equipamento: equipamento })).
                 then (contratos => this.setState ({ contratoLista: contratos }))
         );
     }
@@ -294,16 +292,20 @@ class GrupoEquipamento extends React.Component {
         globalThis.clearLabel ();
     }
 
-    async atualizaEquipamentoLista (parceiro) {
+    async atualizaEquipamentoLista (parceiro = null) {
 
-        const equipamentosQuery = await host.loadFile (`${ globalFullUrl }sql/equipamentoCustom.sql`);
-        const equipamentos = await query.select (
-            equipamentosQuery.format ({
-                where: parceiro ? `AND par.CODPARC = ${ parceiro.value  } ` : ' '
-            })
-        );
+        if (this.state.popupAbertoSet && parceiro) {
 
-        this.setState ({ popupEquipamentoLista: equipamentos });
+            const equipamentosQuery = await host.loadFile (`${ globalFullUrl }sql/equipamentoCustom.sql`);
+            const equipamentos = await query.select (
+                equipamentosQuery.format ({
+                    where: parceiro ? `AND par.CODPARC = ${ parceiro.value  } ` : ' '
+                })
+            );
+
+            this.setState ({ popupEquipamentoLista: equipamentos }, () => this.localizarParceiro (''));
+
+        } else this.setState ({ popupEquipamentoLista: undefined }, () => this.localizarParceiro (''));
 
     }
 
@@ -315,6 +317,5 @@ class GrupoEquipamento extends React.Component {
         );
 
         this.setState ({ popupParceiroLista: parceiros });
-
     }
 }

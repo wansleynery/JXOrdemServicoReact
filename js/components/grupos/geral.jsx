@@ -31,7 +31,7 @@ class GrupoGeral extends React.Component {
 
     componentDidUpdate () {
 
-        if (this.props.contatos.length < 0 && this.state.contatoEscolhido !== -1)
+        if (this.props.contatos.length == 0 && this.state.contatoEscolhido !== -1)
             this.setState ({ contatoEscolhido: -1 });
 
     }

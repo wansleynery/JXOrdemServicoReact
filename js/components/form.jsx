@@ -172,7 +172,7 @@ class Form extends React.Component {
 
 
 
-    createInvoice (stateFiltered, parameters) {
+    async createInvoice (stateFiltered, parameters) {
 
         const nota = {
             CODPARC     : stateFiltered.clienteEscolhido,
@@ -186,14 +186,56 @@ class Form extends React.Component {
             ITENS       : []
         }
 
-        return new Promise (resolve =>
-            query.save (nota, 'nota').
-                then (response => {
-                    resolve (response.pk.NUNOTA.$)
-                }).
-                catch (error => this.errorTreatment (error))
-        );
+        if (stateFiltered.contratoEscolhido)
+            nota.NUMCONTRATO = stateFiltered.contratoEscolhido;
 
+        let idInvoice = (await query.save (nota, 'nota')).pk.NUNOTA.$;
+
+        const queryContract = await host.loadFile (`${ globalFullUrl }sql/itemContrato.sql`);
+
+        const response = await query.select (queryContract);
+    
+        await query.save ({
+            NUNOTA: idInvoice,
+            SEQUENCIA: 1,
+            CODPROD: response [0].CODPROD,
+            CODVOL: response  [0].CODVOL,
+            QTDNEG: 1,
+            VLRUNIT: response [0].VLRVENDA,
+            VLRTOT: response  [0].VLRVENDA
+        }, 'ItemNota');
+
+        return idInvoice;
+    }
+
+
+
+    async confirmInvoice (idInvoice) {
+
+        const response = await fetch (`${ window.location.origin.replace ('mge/', '/') }/mgecom/service.sbr?serviceName=CACSP.confirmarNota`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify ({
+                serviceName: "CACSP.confirmarNota",
+                requestBody: {
+                    nota: {
+                        confirmacaoCentralNota: "true",
+                        ehPedidoWeb: "false",
+                        atualizaPrecoItemPedCompra: "false",
+                        ownerServiceCall: "CentralNotas_CentralNotas_0",
+                        NUNOTA: {
+                            $: idInvoice
+                        }
+                    }
+                }
+            })
+        });
+
+        if (response.status == 200) {
+            await query.save ({ AD__APROVADO_PORTAL: 'S' }, 'nota', { NUNOTA: idInvoice });
+        }
+
+        return idInvoice;
     }
 
 
@@ -231,9 +273,9 @@ class Form extends React.Component {
         return stateFiltered;
     }
 
+    
 
-
-    saveServiceOrder () {
+    async saveServiceOrder () {
 
         let newState = this.refinedState ();
 
@@ -248,6 +290,8 @@ class Form extends React.Component {
                 this.getParameters ().then (parametros => {
 
                     this.createInvoice (newState, parametros).then (async invoiceID => {
+
+                        if (newState.contratoEscolhido) await this.confirmInvoice (invoiceID);
 
                         this.setState ({ invoiceID: invoiceID });
                         let date = new Date ().toSQLDate ();
