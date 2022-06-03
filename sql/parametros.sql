@@ -98,3 +98,17 @@ FROM
     
 WHERE
     CHAVE = 'MODCABPEDM7'
+    
+UNION ALL
+    
+SELECT
+    'EMPRESA' AS ORIGEM,
+    CASE
+        WHEN TO_NUMBER (AD_GET_EMPRESATIPOM7 ('S')) < 1 THEN
+            '1'
+        ELSE
+            AD_GET_EMPRESATIPOM7 ('S')
+    END AS INTEIRO
+    
+FROM
+    DUAL

@@ -7,6 +7,7 @@ FROM
     INNER JOIN AD_EQUIPAMENTO eq ON eq.CODPARCCLI = par.CODPARC
     
 WHERE 1 = 1
+    AND nvl (par.AD_BLOQUEARABRIROS, 'N') = 'N'
     AND (
            CODPARC LIKE '%%info%'
         OR CGC_CPF LIKE '%%info%'

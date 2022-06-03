@@ -181,7 +181,7 @@ class Form extends React.Component {
             CODTIPVENDA : parameters.ORCAMENTO_TIPO_VENDA,
             CODNAT      : parameters.ORCAMENTO_NATUREZA,
             CODVEND     : undefined,
-            CODEMP      : stateFiltered.empresaEscolhida,
+            CODEMP      : parameters.EMPRESA,
             TIPMOV      : parameters.ORCAMENTO_TIPO_MOVIMENTO,
             ITENS       : []
         }
@@ -190,19 +190,24 @@ class Form extends React.Component {
             nota.NUMCONTRATO = stateFiltered.contratoEscolhido;
 
         let idInvoice = (await query.save (nota, 'nota')).pk.NUNOTA.$;
+        let response = null;
 
-        const queryContract = await host.loadFile (`${ globalFullUrl }sql/itemContrato.sql`);
+        if (stateFiltered.contratoEscolhido) {
+            const queryContract = await host.loadFile (`${ globalFullUrl }sql/itemDefinidoContrato.sql`);
+            response = await query.select (queryContract.format ({ id: stateFiltered.equipamentoEscolhido }));
+        } else {
+            const queryContract = await host.loadFile (`${ globalFullUrl }sql/itemContrato.sql`);
+            response = await query.select (queryContract);
+        }
 
-        const response = await query.select (queryContract);
-    
         await query.save ({
-            NUNOTA: idInvoice,
-            SEQUENCIA: 1,
-            CODPROD: response [0].CODPROD,
-            CODVOL: response  [0].CODVOL,
-            QTDNEG: 1,
-            VLRUNIT: response [0].VLRVENDA,
-            VLRTOT: response  [0].VLRVENDA
+            NUNOTA      : idInvoice,
+            SEQUENCIA   : response [0].SEQUENCIA,
+            CODPROD     : response [0].CODPROD,
+            CODVOL      : response [0].CODVOL,
+            QTDNEG      : response [0].QTDNEG,
+            VLRUNIT     : response [0].VLRUNIT,
+            VLRTOT      : response [0].VLRTOT
         }, 'ItemNota');
 
         return idInvoice;
@@ -212,20 +217,24 @@ class Form extends React.Component {
 
     async confirmInvoice (idInvoice) {
 
-        const response = await fetch (`${ window.location.origin.replace ('mge/', '/') }/mgecom/service.sbr?serviceName=CACSP.confirmarNota`, {
+        const response = await fetch (`${
+                window.location.origin.replace ('mge/', '/')
+            }/mgecom/service.sbr?serviceName=ServicosNfeSP.confirmarNotas&outputType=json`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify ({
-                serviceName: "CACSP.confirmarNota",
+                serviceName: "ServicosNfeSP.confirmarNotas",
                 requestBody: {
-                    nota: {
-                        confirmacaoCentralNota: "true",
-                        ehPedidoWeb: "false",
-                        atualizaPrecoItemPedCompra: "false",
-                        ownerServiceCall: "CentralNotas_CentralNotas_0",
-                        NUNOTA: {
-                            $: idInvoice
-                        }
+                    notas: {
+                        confirmacaoPortal         : true,
+                        aprovarNFeNFSe            : false,
+                        confirmacaoCentralNota    : true,
+                        pedidoWeb                 : false,
+                        atualizaPrecoItemPedCompra: false,
+                        resourceID                : "br.com.sankhya.mgecom.mov.selecaodedocumento",
+                        ownerServiceCall          : "SelecaoDocumento",
+                        nunota                    : [ { "$": idInvoice } ],
+                        txProperties              : { prop: [] }
                     }
                 }
             })
@@ -479,6 +488,7 @@ class Form extends React.Component {
         result ['SERVICO_ID'] =                 Number (services.filter (serv => serv.ORIGEM === 'SERVICO')             [0].INTEIRO);
         result ['FILA_CAMPO_ID'] =              Number (services.filter (serv => serv.ORIGEM === 'FILACAMPO')           [0].INTEIRO);
         result ['FILA_LAB_ID'] =                Number (services.filter (serv => serv.ORIGEM === 'FILALAB')             [0].INTEIRO);
+        result ['EMPRESA'] =                    Number (services.filter (serv => serv.ORIGEM === 'EMPRESA')             [0].INTEIRO);
 
         return result;
     

@@ -1,7 +1,7 @@
 SELECT
     edrequ.CODEND AS CODIGO,
     edr.TIPO || ' ' || edr.NOMEEND || ', ' || NVL (edrequ.NUMEND, '[SN]') AS ENDERECO,
-    edr.DESCRICAOCORREIO AS COMPLEMENTO,
+    edrequ.COMPLEMENTO AS COMPLEMENTO,
     bai.NOMEBAI AS BAIRRO,
     edrequ.CEP,
     UPPER (cid.NOMECID) AS CIDADE,
