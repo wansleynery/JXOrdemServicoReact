@@ -41,8 +41,8 @@ class Form extends React.Component {
             document.querySelector (selector2) && document.querySelector (selector2).click ();
 
             this.setState ({
-                contrato        : -1,
-                contato         : -1
+                contato: -1,
+                contrato: -1
             });
         }
 
@@ -282,7 +282,7 @@ class Form extends React.Component {
         return stateFiltered;
     }
 
-    
+
 
     async saveServiceOrder () {
 
@@ -329,9 +329,10 @@ class Form extends React.Component {
                                 SITUACAO    : 'P',
                                 CODATEND    : userID,
                                 DESCRICAO   : newState.descricao,
-                                CODUSURESP  : newState.osInterna
-                                                ? parametros.FILA_LAB_ID
-                                                : parametros.FILA_CAMPO_ID,
+                                CODUSURESP  : newState.filaEscolhida
+                                              && Number (newState.filaEscolhida) != Number (parametros.FILA_CAMPO_ID)
+                                                 ? newState.filaEscolhida
+                                                 : parametros.FILA_CAMPO_ID,
                                 NUNOTA      : invoiceID,
                                 DTPREVISTA  : newState.dataPrevista.toSQLDate (),
                                 AD_CODEMP   : newState.empresaEscolhida,
@@ -342,7 +343,12 @@ class Form extends React.Component {
                                 CIDADE      : parceiro [0].CIDADE
 
                             }
-        
+
+                            if (
+                                newState.filaEscolhida
+                                && Number (newState.filaEscolhida) != Number (parametros.FILA_CAMPO_ID)
+                            ) { serviceOrder.TIPO = 'I'; }
+
                             query.save (serviceOrder, 'OrdemServico').then (serviceOrderResponse => {
 
                                 query.
@@ -359,9 +365,10 @@ class Form extends React.Component {
                                     GRAUDIFIC   : 0,
                                     RETRABALHO  : 'N',
                                     DHPREVISTA  : newState.dataPrevista.toSQLDate (),
-                                    CODUSU      : newState.osInterna
-                                                    ? parametros.FILA_LAB_ID
-                                                    : parametros.FILA_CAMPO_ID,
+                                    CODUSU      : newState.filaEscolhida
+                                                  && Number (newState.filaEscolhida) != Number (parametros.FILA_CAMPO_ID)
+                                                     ? newState.filaEscolhida
+                                                     : parametros.FILA_CAMPO_ID,
                                     TEMPGASTO   : 0,
                                     COBRAR      : 'N',
                                     CODUSUALTER : userID,
@@ -387,8 +394,9 @@ class Form extends React.Component {
                                                     query.save ({
                                                         CODUSUALTER : userID,
                                                         CODUSUREM   : userID,
-                                                        CODUSU      : newState.osInterna
-                                                                        ? parametros.FILA_LAB_ID
+                                                        CODUSU      : newState.filaEscolhida
+                                                                        && Number (newState.filaEscolhida) != Number (parametros.FILA_CAMPO_ID)
+                                                                        ? newState.filaEscolhida
                                                                         : parametros.FILA_CAMPO_ID,
                                                         CODSERV     : parametros.SERVICO_ID,
                                                         CODPROD     : parametros.SERVICO_ID,
@@ -515,7 +523,7 @@ class Form extends React.Component {
 
         let arr = document.querySelectorAll ('svg[data-testid="CloseIcon"]');
 
-        for (var i in arr) {
+        for (let i in arr) {
             if (
                 arr [i]
                 && typeof arr [i] === 'object'
@@ -535,6 +543,24 @@ class Form extends React.Component {
                 arr [i].parentElement.click ();
             }
         }
+
+        this.equipamentoRef.current.setState ({
+
+            fabricante           : '',
+            modelo               : '',
+            serie                : '',
+
+            contratoLista        : [],
+            equipamentoLista     : [],
+            enderecoLista        : [],
+            contratoEscolhido    : -1,
+            equipamentoEscolhido : -1,
+
+            popupAbertoSet       : false,
+            popupParcSet         : undefined,
+            popupEquipSet        : undefined
+
+        });
 
         this.setState ({
 

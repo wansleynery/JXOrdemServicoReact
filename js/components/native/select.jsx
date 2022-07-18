@@ -38,7 +38,7 @@
         return (
             <div className= { `input-group mb-3 ${ this.props.className ? this.props.className : 'w-100' }` }>
 
-                <div className= { 'input-group-prepend' }>
+                <div className= { 'input-group-prepend' } style= { this.props.smallLabel ? { width: '100px' } : {} }>
                     <span className= { 'input-group-text' }>
                         {
                             this.props.action

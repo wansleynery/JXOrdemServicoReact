@@ -41,8 +41,9 @@ class GrupoEquipamento extends React.Component {
                 {
                     inputRender &&
                     <Input readonly
-                        title= { 'Equipamento' }
-                        value= {
+                        title=  { 'Equipamento' }
+                        action= { () => openApp ('br.com.sankhya.menu.adicional.AD_EQUIPAMENTO', { ID: 0 }) }
+                        value=  {
                             this.state.equipamentoEscolhido > -1
                                 ? this.state.equipamentoLista [0] ['label']
                                 : ''
@@ -96,6 +97,10 @@ class GrupoEquipamento extends React.Component {
                         <div>
                             <Select
                                 title=          { 'Parceiro' }
+
+                                action=         { () => openApp ('br.com.sankhya.core.cad.parceiros', { CODPARC: 0 }) }
+                                onRefresh=      { () => this.localizarParceiro ('') }
+
                                 noOptionsText=  { 'Digite para localizar...' }
                                 selectClassName={ 'parceiroEquipamento' }
                                 options=        { this.state.popupParceiroLista || [] }

@@ -12,7 +12,10 @@ class GrupoGeral extends React.Component {
             osInterna: false,
 
             prioridadeLista: [],
-            prioridadeEscolhida: -1
+            prioridadeEscolhida: -1,
+
+            filaLista: [],
+            filaEscolhida: -1
 
         };
     }
@@ -21,6 +24,7 @@ class GrupoGeral extends React.Component {
 
         this.getPrioridades ();
         this.getEmpresas ();
+        this.getFila ();
 
         if (this.props.contatos.length > 0)
             this.selecionaContato (this.props.contatos [0]);
@@ -46,14 +50,16 @@ class GrupoGeral extends React.Component {
 
                     onChange= { this.selecionaEmpresa.bind (this) }
                     onClear= { () => this.selecionaEmpresa () }
-                    className= { `w-75` }
+                    className= { `w-50` }
                 />
 
-                <Slider
-                    label= { 'OS Interna' }
-                    checked= { this.state.osInterna }
-                    onChange= { value => this.setState ({ osInterna: value }) }
-                    className= { `w-25` }
+                <Select
+                    title= { 'Fila' }
+                    options= { this.state.filaLista }
+
+                    onChange= { this.selecionaFila.bind (this) }
+                    onClear= { () => this.selecionaFila () }
+                    className= { `w-50` }
                 />
 
                 <Input readOnly
@@ -77,7 +83,6 @@ class GrupoGeral extends React.Component {
                     action=     { this.props.idCliente ? () => openApp ('br.com.sankhya.core.cad.parceiros', { CODPARC: this.props.idCliente }) : undefined }
                     className=  { 'select-contatos' }
                     noOptionsMessage= { 'Selecione um Cliente que possua Contatos' }
-                    
                     onRefresh=  { this.props.refresh }
                     onChange=   { this.selecionaContato.bind (this) }
                     onClear= { () => this.selecionaContato () }
@@ -116,6 +121,15 @@ class GrupoGeral extends React.Component {
 
     selecionaContato (item) {
         this.setState ({ contatoEscolhido: item ? item.value : -1 });
+    }
+
+    getFila () {
+        host.loadFile (`${ globalFullUrl }sql/fila.sql`).then (filaQuery =>
+            query.select (filaQuery).then (filas => this.setState ({ filaLista: filas }))
+        );
+    }
+    selecionaFila (item) {
+        this.setState ({ filaEscolhida: item ? item.value : -1 });
     }
 
 }
