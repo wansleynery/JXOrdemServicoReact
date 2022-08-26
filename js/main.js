@@ -41,15 +41,3 @@ window.onerror = function (event, _url, _line, _col, _error) {
 
     return false;
 }
-
-/**
-let div = document.createElement ('iframe');
-div.src = '/m7serv/PortalGerenteM7.xhtml5?resourceID=br.com.sankhya.PortalGerenteM7';
-div.id = 'toRecoverID';
-div.style.display = 'none';
-document.body.appendChild (div);
-
-var toRecoverID = document.getElementById ('toRecoverID');
-let toRecoverElement = null;
-setTimeout (() => toRecoverElement = 'contentDocument' in toRecoverID ? toRecoverID.contentDocument : toRecoverID.contentWindow.document, 5000);
-*/

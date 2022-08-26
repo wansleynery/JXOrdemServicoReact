@@ -300,7 +300,7 @@ class Form extends React.Component {
 
                     this.createInvoice (newState, parametros).then (async invoiceID => {
 
-                        if (newState.contratoEscolhido) await this.confirmInvoice (invoiceID);
+                        await this.confirmInvoice (invoiceID);
 
                         this.setState ({ invoiceID: invoiceID });
                         let date = new Date ().toSQLDate ();
@@ -327,6 +327,7 @@ class Form extends React.Component {
                                 CODCOS      : 1,
                                 DHCHAMADA   : date,
                                 SITUACAO    : 'P',
+                                TIPO        : 'A',
                                 CODATEND    : userID,
                                 DESCRICAO   : newState.descricao,
                                 CODUSURESP  : newState.filaEscolhida
@@ -343,11 +344,6 @@ class Form extends React.Component {
                                 CIDADE      : parceiro [0].CIDADE
 
                             }
-
-                            if (
-                                newState.filaEscolhida
-                                && Number (newState.filaEscolhida) != Number (parametros.FILA_CAMPO_ID)
-                            ) { serviceOrder.TIPO = 'I'; }
 
                             query.save (serviceOrder, 'OrdemServico').then (serviceOrderResponse => {
 
